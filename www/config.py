@@ -17,7 +17,7 @@ class Dict(dict):
         try:
             return self[key]
         except KeyError:
-            raise AttributeError(r"'Dict' object has no attribute '%s'" % key)
+            raise AttributeError(f"'Dict' object has no attribute {key!r}")
 
     def __setattr__(self, key, value):
         self[key] = value

@@ -8,8 +8,11 @@ from datetime import datetime
 from aiohttp import web
 from jinja2 import Environment, FileSystemLoader
 
+from config import configs
+
 import orm
 from coroweb import add_routes, add_static
+from handlers import cookie2user, COOKIE_NAME
 
 def init_jinja2(app, **kw):
     logging.info('init jinja2...')
@@ -36,6 +39,20 @@ def init_jinja2(app, **kw):
 async def logger(request, handler):
     logging.info(f'Request: {request.method} {request.path}')
     # await asyncio.sleep(0.3)
+    return (await handler(request))
+
+@web.middleware
+async def auth(request, handler):
+    logging.info(f'check user: {request.method} {request.path}')
+    request.__user__ = None
+    cookie_str = request.cookies.get(COOKIE_NAME)
+    if cookie_str:
+        user = await cookie2user(cookie_str)
+        if user:
+            logging.info('set current user: %s' % user.email)
+            request.__user__ = user
+    if request.path.startswith('/manage/') and (request.__user__ is None or not request.__user__.admin):
+        return web.HTTPFound('/signin')
     return (await handler(request))
 
 @web.middleware
@@ -72,6 +89,7 @@ async def response(request, handler):
             resp.content_type = 'application/json;charset=utf-8'
             return resp
         else:
+            r['__user__'] = request.__user__
             resp = web.Response(body=request.app['__templating__'].get_template(template).render(**r).encode('utf-8'))
             resp.content_type = 'text/html;charset=utf-8'
             return resp
@@ -102,7 +120,7 @@ def datetime_filter(t):
 async def init(loop):
     await orm.create_pool(loop=loop, host='127.0.0.1', port=3306, user='user1', password='Hg4oHqJPmmbbWBoW', db='user1')
     #创建一个web服务器对象
-    app = web.Application(loop=loop, middlewares=[logger, response])
+    app = web.Application(loop=loop, middlewares=[logger, auth, parse_data, logger, response])
     #初始化jinja2
     init_jinja2(app, filters=dict(datetime=datetime_filter))
     #关联链接地址和对应的处理函数

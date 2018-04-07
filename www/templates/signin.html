@@ -1,84 +1,87 @@
 <!DOCTYPE html>
 <html class="uk-height-1-1">
+
 <head>
-    <meta charset="utf-8" />
-    <title>登录 - Awesome Python Webapp</title>
-    <link rel="stylesheet" href="/static/css/uikit.min.css">
-    <!-- <link rel="stylesheet" href="/static/css/uikit.gradient.min.css"> -->
-    <script src="/static/js/jquery.min.js"></script>
-    <script src="/static/js/sha1.js"></script>
-    <script src="/static/js/uikit.min.js"></script>
-    <script src="/static/js/uikit-icons.min.js"></script>
-    <script src="/static/js/vue.min.js"></script>
-    <script src="/static/js/awesome.js"></script>
-    
+  <meta charset="utf-8" />
+  <title>登录 - Awesome Python Webapp</title>
+  <link rel="stylesheet" href="/static/css/uikit.min.css">
+  <!-- <link rel="stylesheet" href="/static/css/uikit.gradient.min.css"> -->
+  <script src="/static/js/jquery.min.js"></script>
+  <script src="/static/js/sha1.js"></script>
+  <script src="/static/js/uikit.min.js"></script>
+  <script src="/static/js/uikit-icons.min.js"></script>
+  <script src="/static/js/vue.min.js"></script>
+  <script src="/static/js/awesome.js"></script>
+
 </head>
+
 <body>
-<div class="uk-align-center uk-text-center uk-text-middle uk-height-1-1" style="width: 320px">
+  <div class="uk-align-center uk-text-center uk-text-middle uk-height-1-1" style="width: 320px">
     <!-- <div class="uk-vertical-align-middle" style="width: 320px"> -->
-        <p>
-            <a href="/" class="uk-icon-button" uk-icon="home"></a>
-            <a href="/" class="uk-text-middle">Awesome Python Webapp</a>
-        </p>
-        <!-- <form id="vm" v-on="submit: submit" class="uk-panel uk-panel-box uk-form"> -->
-        <div id="vm">
-            <div class="uk-alert uk-alert-danger uk-hidden"></div>
+    <p>
+      <a href="/" class="uk-icon-button" uk-icon="home"></a>
+      <a href="/" class="uk-text-middle">Awesome Python Webapp</a>
+    </p>
+    <form id="vm" v-on:submit.prevent="submit" class="uk-panel uk-panel-box uk-form">
+      <div class="uk-alert uk-alert-danger uk-hidden"></div>
 
-            <div class="uk-margin">
-                <div class="uk-inline uk-width-1-1">
-                    <span class="uk-form-icon" :uk-icon="'icon: mail'"></span>
-                    <input v-model="email" name="email" type="text" placeholder="电子邮件" maxlength="50" class="uk-input">
-                </div>
-            </div>
-
-            <div class="uk-margin">
-                <div class="uk-inline uk-width-1-1">
-                    <span class="uk-form-icon" :uk-icon="'icon: lock'"></span>
-                    <input v-model="passwd" name="passwd" type="password" placeholder="口令" maxlength="50" class="uk-input">
-                </div>
-            </div>
-            
-            <div class="uk-margin">
-                <button v-on:click="submit" type="submit" class="uk-width-1-1 uk-button uk-button-primary uk-button-large"><i class="uk-icon-sign-in"></i> 登录</button>
-            </div>
+      <div class="uk-margin">
+        <div class="uk-inline uk-width-1-1">
+          <span class="uk-form-icon" :uk-icon="'icon: mail'"></span>
+          <input v-model="email" name="email" type="text" placeholder="电子邮件" maxlength="50" class="uk-input">
         </div>
-        <!-- </form> -->
-    <!-- </div> -->
-</div>
+      </div>
 
-<script>
-    $(function() {
-        var vmAuth = new Vue({
-            el: '#vm',
-            data: {
-                email: '',
-                passwd: ''
-            },
-            methods: {
-                submit: function(event) {
-                    event.preventDefault();
-                    var $form = $('#vm');
-                    var email = this.email.trim().toLowerCase();
-                    var hashObj = new jsSHA(
-                        "SHA-1",
-                        "TEXT",
-                        {numRounds: 1}
-                    );
-                    hashObj.update(email + ':' + this.passwd);
-                    data = {
-                        email: email,
-                        passwd: this.passwd==='' ? '' : hashObj.getHash("HEX")
-                        // passwd: this.passwd==='' ? '' : CryptoJS.SHA1(email + ':' + this.passwd).toString()
-                    };
-                    $form.postJSON('/api/authenticate', data, function(err, result) {
-                        if (! err) {
-                            location.assign('/');
-                        }
-                    });
-                }
-            }
-        });
+      <div class="uk-margin">
+        <div class="uk-inline uk-width-1-1">
+          <span class="uk-form-icon" :uk-icon="'icon: lock'"></span>
+          <input v-model="passwd" name="passwd" type="password" placeholder="口令" maxlength="50" class="uk-input">
+        </div>
+      </div>
+
+      <div class="uk-margin">
+        <button v-on:click="submit" type="submit" class="uk-width-1-1 uk-button uk-button-primary uk-button-large">
+          <i class="uk-icon-sign-in"></i> 登录</button>
+      </div>
+    </form>
+    <!-- </div> -->
+  </div>
+
+  <script>
+    $(function () {
+      var vmAuth = new Vue({
+        el: '#vm',
+        data: {
+          email: '',
+          passwd: ''
+        },
+        methods: {
+          submit: function (event) {
+            // event.preventDefault();
+            var $form = $('#vm');
+            var email = this.email.trim().toLowerCase();
+            var hashObj = new jsSHA(
+              "SHA-1",
+              "TEXT",
+              { numRounds: 1 }
+            );
+            hashObj.update(email + ':' + this.passwd);
+            data = {
+              email: email,
+              passwd: this.passwd === '' ? '' : hashObj.getHash("HEX")
+              // passwd: this.passwd==='' ? '' : CryptoJS.SHA1(email + ':' + this.passwd).toString()
+            };
+            $form.postJSON('/api/authenticate', data, function (err, result) {
+              if (!err) {
+                location.assign('/');
+              }
+            });
+          }
+        }
+      });
     });
-</script>
+  </script>
+
 </body>
+
 </html>

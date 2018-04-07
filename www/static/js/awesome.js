@@ -358,13 +358,14 @@ if (typeof(Vue)!=='undefined') {
         return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes();
     });
     Vue.component('pagination', {
-        template: '<ul class="uk-pagination">' +
-                '<li v-if="! has_previous" class="uk-disabled"><span><i class="uk-icon-angle-double-left"></i></span></li>' +
-                '<li v-if="has_previous"><a v-attr="onclick:\'gotoPage(\' + (page_index-1) + \')\'" href="#0"><i class="uk-icon-angle-double-left"></i></a></li>' +
-                '<li class="uk-active"><span v-text="page_index"></span></li>' +
-                '<li v-if="! has_next" class="uk-disabled"><span><i class="uk-icon-angle-double-right"></i></span></li>' +
-                '<li v-if="has_next"><a v-attr="onclick:\'gotoPage(\' + (page_index+1) + \')\'" href="#0"><i class="uk-icon-angle-double-right"></i></a></li>' +
-            '</ul>'
+        props: ['page', 'pageindex'],
+        template: `<ul class="uk-pagination uk-flex-center">
+        <li v-if="! page.has_previous" class="uk-disabled"><a href="#"><span uk-pagination-previous></span></a></li>
+        <li v-else><a @click="gotoPage(pageindex-1)" href="#0"><span uk-pagination-previous></span></a></li>
+        <li class="uk-active"><a href="#"><span v-text="pageindex"></span></a></li>
+        <li v-if="! page.has_next" class="uk-disabled"><a href="#"><span uk-pagination-next></span></a></li>
+        <li v-else><a @click="gotoPage(pageindex+1)" href="#0"><span uk-pagination-next></span></a></li>
+    </ul>`
     });
 }
 

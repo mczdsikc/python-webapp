@@ -45,6 +45,11 @@
                 <li data-url="blogs" class="uk-active"><a href="/"><span uk-icon="icon: home"></span>日志</a></li>
                 <li><a target="_blank" href="http://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000"><span uk-icon="icon: link"></span>教程</a></li>
                 <li><a target="_blank" href="https://github.com/michaelliao/awesome-python3-webapp"><span uk-icon="icon: code"></span>源码</a></li>
+                {% if __user__ %}
+                    {% if __user__.admin %}
+                    <li><a target="_blank" href="/manage/blogs/create"><span uk-icon="icon: pencil"></span>创建日志</a></li>
+                    {% endif %}
+                {% endif %}
             </ul>
 
         </div>
